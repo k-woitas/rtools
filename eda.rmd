@@ -1,0 +1,271 @@
+---
+title: "R Basics: Exploratory Data Analysis"
+subtitle: "University Library Bern Digital Toolbox"
+author: "Kathi Woitas, kathi.woitas@ub.unibe.ch"
+date: "2020-09-02"
+output: 
+  html_document:
+    toc: true
+    smart: true
+    number_section: true
+    df_print: paged 
+    theme: "spacelab"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=TRUE)
+```
+
+*Exploratory Data Analysis with R*  
+
+With this RMarkdown document we will present some basic methods to overview given data.
+
+The required R Packages are:
+```{r require, message=FALSE}
+require(tidyverse)   # tidyverse is the sine qua non, see https://www.tidyverse.org/ and includes important packages like tidyr, dplyr, ggplot2, readr, magrittr etc
+require(skimr)  # skimr creates nice overview tables and does with dplyr and piping
+require(mosaic)  # mosaic includes also ggformula and lattice packages
+require(QuantPsyc)   # QuantPsyc delivers useful statistical functions like "Make.Z" and "eda.uni"
+```
+
+# Get the full glimpse
+
+We will use the fancy `starwars` dataframe from `{dplyr}` package, and call it `sw` for the sake of convenience.
+```{r}
+sw <- starwars   # copy to "sw"
+sw   # just view
+```
+
+For plain R output there is a concise first viewing option of a dataframe with the `glimpse` command.
+```{r}
+glimpse(sw)
+```
+
+There are `r ncol(sw)` variables, of which 3 are a list type. The other variables are numbers or characters, last ones partly better to be transformed into categorial (i.e. factor or dummy) variables.  
+Before we transform them, we might look at their unique values. Also "NA"s, R's term for non-existent values, are printed.
+```{r}
+# show unique values for the specified variable, here columns 9, "gender" and 4, "hair_color" - which indeed is a tiny example of a for-loop
+for (i in c(9,4)) {
+       unique(sw[,i]) %>% print.AsIs()  
+}
+```
+
+We might notice that there are 2 different "blond/blonde" values in `hair_color`. Let's change this!  
+We'll use the pipe `%>%` formula as we take the `sw` dataframe, do the mutation and write it back to `sw`.  
+Second, we turn `hair_color` into a factor variable.
+```{r}
+sw <- sw %>% mutate(hair_color = replace(hair_color, which(hair_color=="blonde"), "blond")) 
+sw$hair_color <- as.factor(sw$hair_color)
+```
+
+Here's one more, very concise overview option (also using the pipe formula) -- which may help best at large datasets.
+```{r}
+skim(sw) %>% summary()  
+```
+  
+  
+
+Before continue with overview statistics we might get clear about adressing and accessing parts of the dataframe. So-called *subsetting* a dataframe in R ist quite easy to do, you just need to adress the relevant rows and/or columns by numbers in squared brackets, and use the vector format `c(x,y,z)` for multiple ones. (Of course there are more elaborate options to do this, but for now we stick to shortness and the usage in the functions beneath.)
+```{r}
+sw[1:5, c(1,6:4)]   # first 5 rows of columns 1, 6, 5, 4
+sw[3, -c(5:ncol(sw))]   # row 3 with columns 1 to 4 by sorting out columns 5 to the last
+```
+
+   
+Let's now get a better insight into certain variables. For this we use the `skim` function from the package `{skimr}`. (Of course you can also "skim" the whole dataframe if you want to: It might deliver a large table, anyway.) `skim` gives us very useful basic statistics for the chosen variables according to their type, and even a mini histogram where appropriate.
+Therefore, `skim` is very useful at checking for missing values (and their share), whitespaces and unique values, and also a first glimpse of the single variate distributions.
+```{r}
+# skimming a character, numeric, integer, factor variable
+skim(sw, sex, birth_year, height, hair_color)   # alternatively use column numbers like "skim(sw, c(8, 7, 2, 4))"
+```
+
+
+We also turn the other appropriate variables into factors and may check with `glimpse` one more time.
+```{r}
+sw[,c(5:6,8:11)] <- lapply(sw[,c(5:6,8:11)], as.factor)   # turning columns 5, 6 and 8 to 11 into factors
+glimpse(sw)
+```
+
+## Inspect a subset
+
+We might take a look at a specific subset of the whole dataset.
+
+With base R `sapply` there is a single command to apply the same function to several variables or the whole dataframe.
+```{r}
+sapply(sw[,c(4:6,8:11)], nlevels)    # number of levels for the categorials (columns 4 to 6 and 8 to 11)
+sapply(sw[,2:3], median, na.rm=T)    # median score for the numerics (columns 2 and 3); "na.rm" for ignoring the NA's
+```
+
+
+
+The function `select` from `{dplyr}` offers a kind way of including or excluding variables, which pays off best using it in building a data pipe. After selecting you can continue with various statistical functions like `summary` here.
+```{r}
+sw %>% dplyr::select(-c(name,films, vehicles, starships, c(4:7))) %>%    # exclude certain variables
+  summary()     # statistical summaries for the left variables
+```
+
+
+
+# Looking at individual variables
+
+The tiny `str` command will generally check of which type or structure a variable or any R object is, with it's sibling `summary` it is also used beyond EDA.
+```{r}
+str(sw$sex)
+str(sw$name)
+str(sw$birth_year)
+```
+
+
+## Numeric (continous) variables
+
+For numeric variables there are dedicated statistical commands like:
+```{r}
+summary(sw$birth_year)     
+range(sw$birth_year, na.rm=T)  # note another option for dealing with NA's
+quantile(sw$height, probs=0.8, na.rm=T)  # 8th quantile
+top_counts(sw$height, max_levels=5)  # top 5 values with counts
+```
+
+
+Also, there are options which deliver the numbers in particular output formats, like `skim` we already know. `df_stats` from the `{ggformula}` package creates a dataframe, and can also be adapted.
+```{r}
+skim(sw$birth_year)     # for further options with skim see above
+df_stats(~ mass, data=sw)    # standard view by df_stats
+df_stats(~ mass, data=sw, quantile, iqr, mad)   # adapted df_stats output
+```
+
+
+Turning numeric values into standard normal values can be done in a quite a simple way using the `Make.Z` command, or alternatively with `scale`. Both can be also applied on whole dataframes.
+```{r}
+sw$heightZ <- Make.Z(sw$height)   # converting into z-scores (standard-normal) 
+sw$massZ <- scale(sw$mass)  # same for mass, with scale()
+# as.data.frame(Make.Z(x))   # back converting into dataframe, when Make.Z is applied to a whole dataframe
+```
+
+
+## Categorial (factor) variables
+
+For factor variables there are several ways for inspecting them. 
+```{r}
+summary(sw$gender)  # levels with counts, with NA's
+mosaic::tally(~gender, data=sw)   # gives a nice print out 
+levels(sw$gender)  # only levels, without counts, without NA's
+skim(sw$gender)   # for further options with skim see above
+```
+
+Why it is worth knowing various of them? For instance, you can use them to address particular data.
+```{r}
+levels(sw$gender)[1] 
+summary(sw$gender)[3]
+```
+
+
+For combining in 2 factor variables into a cross table you can use `table` or the `tally` command from `{mosaic}` package -- they differ in handling the NA's.
+```{r}
+table(sw$gender, sw$sex)   # crosstable with NA's being ignored; more options are available with xtabs()
+mosaic::tally(gender ~ sex, data=sw)  # crosstable including NA's
+```
+
+There is also a way to have an insight of the distribution of factor variables using the `top_levels` command from the `{janitor}` package.
+Note how we use a command  from a package NOT sourced in this R/RMarkdown script -- that's a stunning feature of R.
+```{r}
+janitor::top_levels(sw$eye_color, n=3, show_na=T)  # n = number in top & bottom group
+```
+
+Remember `skim` above? Of course you can use `skim` for inspecting a single variable. But you can even adjust `skim` to your own needs. Just write a small function with the `skim_with` command like "my_skim" with MAD, IQR and 10th quantile here.
+```{r}
+my_skim <- skim_with(
+  numeric = sfl(mad = mad, iqr = IQR, p10 = ~ quantile(., probs = .1)), append = F)
+# my_skim(sw$mass)  # What's the problem here?
+```
+
+Different R functions ignore or don't ignore NA's in calculating, as we might have seen. Often bug fixing is just to take NA's explicitly into account, for instance with the `na.omit` command.
+```{r}
+my_skim(na.omit(sw$mass)) 
+```
+
+
+## Grouped variables statistics
+
+The `{dplyr}` function `group_by` easily splits the dataframe into groups along certain variables (factors and numeric!) and works fine with the pipe.
+```{r}
+sw %>% dplyr::group_by(gender) %>%    # building groups by gender
+    dplyr::select(c(2:4))   %>%     # reducing the output by select only a few columns
+         skim()     # skim overview according to the gender groups
+```
+
+We've already heard about the `df_stats` for single variables. Bit it's also very useful for variables grouped by another, as here `height` by `gender` groups. Note that NA's are ignored by default.
+```{r}
+df_stats(height ~ gender, data=sw)   # standard view by df_stats
+```
+
+And this works for grouping along continous variables, too  -- and of course with specifying the statistical values.
+```{r}
+df_stats(height ~ mass, data=sw, mean, range)   # mean and range of height by mass "classes" 
+```
+
+
+
+# Plots
+
+Numbers are fine, but one should always take a look at plots where possible. Note that the plotting options presented here are not primarily meant for a beautiful data visualisation, but for inspecting the given data.
+
+The easiest way to get a picture of possible correlations ist to use `plot` on the whole dataframe or the variables to take into account. Here, we chose to check `height`, `mass`, `sex`, `gender` and `species`, and dropped the 16th observation, which is "Jabba the Hutt", presumably an outlier with his exceptional body shape.
+```{r}
+plot(sw[-16,c(2,3,8,9, 11)], pch=20)   # "pch" sets the shape of the points; alternatively use "pairs"
+```
+
+`pairs.panels` from the `{psych}` package is a more elaborative form of it, including correlation scores and various output/layout options. These may help especially when inspecting more variables at once, for instance by starring or scaling up the font of high correlation coefs.
+```{r}
+psych::pairs.panels(sw[-16,c(2,3,8,9, 11)], method = "pearson", density=T, stars=T, ellipses=F)      # also available: spearman and kendall correlation
+psych::pairs.panels(sw[-16,1:11], method = "pearson", density=T, scale=T, ellipses=F, stars=T)  
+```
+
+
+The `eda.uni` function in `{QuantPsyc}` is a good start for inspecting univariate distributions, as it combines four relevant plots: histogram, density plot, normal plot and boxplot.
+```{r}
+eda.uni(sw$height, title="Univariate Distribution of Height")  # 4 plots in one :)
+```
+
+
+There are various plot options, which can be parametrised in numerous ways. `plot` as the simplest of them will adjust to the given variable type/types. 
+```{r}
+par(mfrow=c(2,2))   # sets visual parameter for showing the following plots in a 2x2 grid pattern
+plot(sw$mass, pch=20, col="orange"); lines(smooth(na.omit(sw$mass)))   # smooth = Tukey's (running median) smoothing; writing 2 lines of code into one by separating them with ";" 
+plot(sw$sex, col=3)  # colour can also be given as integer
+plot(sw$mass[sw$mass < 1000], sw$height[sw$mass < 1000], pch=15)   # with subsetting the data; "pch" parameter refers to the shape of points
+plot(sw$gender, sw$height, pch=20, main="Height in Star Wars characters", horizontal=T) 
+```
+
+
+Certain plots can be addressed by basic commands like `hist`, `boxplot`, `barplot` or `mosaicplot`.
+```{r}
+par(mfrow=c(2,2))   
+hist(sw$height, breaks=5, col=18)    # with given number of bins
+boxplot(sw$height[sw$sex=="female"], horizontal = T, pch=20, main="Height in female Star Wars characters")   # with female sex filter
+barplot(sw$height, col=7, border=7)   # border sets the colour of the shape margins
+mosaicplot(table(sw$sex, sw$gender), col=5:6)
+```
+
+
+`histogram` and `bwplot` from the `{lattice}` package offer easy plots for grouped variables.
+Note that adressing a function with its full package name like `package::command` makes sure to get the right command if there are homonymous ones.
+```{r}
+lattice::histogram(~height|sex, data=sw)    # histogram of height by sex groups
+lattice::bwplot(sex~height, data=sw)    # boxplot of height by sex groups
+```
+
+As noted before there are far more elaborate options to plot data, first and foremost with the `{ggplot2}` package. We won't dive into this, but give a short view on it by using the `{ggfomula}` shortcuts for it. With their shortened grammar there are also a good compromise between quickness and nice view for EDA.
+```{r message=F, warning=F}
+# further ggformula plots are for instance gf_histogram(), gf_dens(), gf_freqpoly(), gf_dotplot(), gf_bar(), gf_violin, along several layout options
+gf_qq(~ height, data=sw)     # normal plot for height
+gf_point(mass ~ height | sex, data=sw, size=2, col=2)      # height vs. mass grouped by sex
+gf_density(~ height,  colour=~sex, data=sw, alpha=0.5, fill=~sex)       # density plot for height gouped by sex
+gf_smooth(mass ~ height, color=~sex, data=sw, size = 1)     # loess is standard smoothing method
+
+```
+
+
+
+
+
