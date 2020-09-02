@@ -1671,8 +1671,8 @@ summary {
 <li><a href="#inspect-a-subset"><span class="toc-section-number">1.1</span> Inspect a subset</a></li>
 </ul></li>
 <li><a href="#looking-at-individual-variables"><span class="toc-section-number">2</span> Looking at individual variables</a><ul>
-<li><a href="#numeric-continous-variables"><span class="toc-section-number">2.1</span> Numeric (continous) variables</a></li>
-<li><a href="#categorial-factor-variables"><span class="toc-section-number">2.2</span> Categorial (factor) variables</a></li>
+<li><a href="#numerical-continuous-variables"><span class="toc-section-number">2.1</span> Numerical (continuous) variables</a></li>
+<li><a href="#categorical-factor-variables"><span class="toc-section-number">2.2</span> Categorical (factor) variables</a></li>
 <li><a href="#grouped-variables-statistics"><span class="toc-section-number">2.3</span> Grouped variables statistics</a></li>
 </ul></li>
 <li><a href="#plots"><span class="toc-section-number">3</span> Plots</a></li>
@@ -1714,7 +1714,7 @@ sw   # just view</code></pre>
 ## $ films      &lt;list&gt; [&lt;&quot;The Empire Strikes Back&quot;, &quot;Revenge of the Sith&quot;, &quot;Re...
 ## $ vehicles   &lt;list&gt; [&lt;&quot;Snowspeeder&quot;, &quot;Imperial Speeder Bike&quot;&gt;, &lt;&gt;, &lt;&gt;, &lt;&gt;, ...
 ## $ starships  &lt;list&gt; [&lt;&quot;X-wing&quot;, &quot;Imperial shuttle&quot;&gt;, &lt;&gt;, &lt;&gt;, &quot;TIE Advanced ...</code></pre>
-<p>There are 14 variables, of which 3 are a list type. The other variables are numbers or characters, last ones partly better to be transformed into categorial (i.e. factor or dummy) variables.<br />
+<p>There are 14 variables, of which 3 are a list type. The other variables are numbers or characters, last ones partly better to be transformed into categorical (i.e. factor or dummy) variables.<br />
 Before we transform them, we might look at their unique values. Also “NA”s, R’s term for non-existent values, are printed.</p>
 <pre class="r"><code># show unique values for the specified variable, here columns 9, &quot;gender&quot; and 4, &quot;hair_color&quot; - which indeed is a tiny example of a for-loop
 for (i in c(9,4)) {
@@ -1808,7 +1808,7 @@ sw$hair_color &lt;- as.factor(sw$hair_color)</code></pre>
   </script>
 </div>
 <p>Let’s now get a better insight into certain variables. For this we use the <code>skim</code> function from the package <code>{skimr}</code>. (Of course you can also “skim” the whole dataframe if you want to: It might deliver a large table, anyway.) <code>skim</code> gives us very useful basic statistics for the chosen variables according to their type, and even a mini histogram where appropriate. Therefore, <code>skim</code> is very useful at checking for missing values (and their share), whitespaces and unique values, and also a first glimpse of the single variate distributions.</p>
-<pre class="r"><code># skimming a character, numeric, integer, factor variable
+<pre class="r"><code># skimming a character, numerical, integer, factor variable
 skim(sw, sex, birth_year, height, hair_color)   # alternatively use column numbers like &quot;skim(sw, c(8, 7, 2, 4))&quot;</code></pre>
 <table>
 <caption>Data summary</caption>
@@ -1974,10 +1974,10 @@ glimpse(sw)</code></pre>
 <h2><span class="header-section-number">1.1</span> Inspect a subset</h2>
 <p>We might take a look at a specific subset of the whole dataset.</p>
 <p>With base R <code>sapply</code> there is a single command to apply the same function to several variables or the whole dataframe.</p>
-<pre class="r"><code>sapply(sw[,c(4:6,8:11)], nlevels)    # number of levels for the categorials (columns 4 to 6 and 8 to 11)</code></pre>
+<pre class="r"><code>sapply(sw[,c(4:6,8:11)], nlevels)    # number of levels for the categoricals (columns 4 to 6 and 8 to 11)</code></pre>
 <pre><code>## hair_color skin_color  eye_color        sex     gender  homeworld    species 
 ##         11         31         15          4          2         48         37</code></pre>
-<pre class="r"><code>sapply(sw[,2:3], median, na.rm=T)    # median score for the numerics (columns 2 and 3); &quot;na.rm&quot; for ignoring the NA&#39;s</code></pre>
+<pre class="r"><code>sapply(sw[,2:3], median, na.rm=T)    # median score for the numericals (columns 2 and 3); &quot;na.rm&quot; for ignoring the NA&#39;s</code></pre>
 <pre><code>## height   mass 
 ##    180     79</code></pre>
 <p>The function <code>select</code> from <code>{dplyr}</code> offers a kind way of including or excluding variables, which pays off best using it in building a data pipe. After selecting you can continue with various statistical functions like <code>summary</code> here.</p>
@@ -2010,9 +2010,9 @@ glimpse(sw)</code></pre>
 <pre><code>##  chr [1:87] &quot;Luke Skywalker&quot; &quot;C-3PO&quot; &quot;R2-D2&quot; &quot;Darth Vader&quot; &quot;Leia Organa&quot; ...</code></pre>
 <pre class="r"><code>str(sw$birth_year)</code></pre>
 <pre><code>##  num [1:87] 19 112 33 41.9 19 52 47 NA 24 57 ...</code></pre>
-<div id="numeric-continous-variables" class="section level2">
-<h2><span class="header-section-number">2.1</span> Numeric (continous) variables</h2>
-<p>For numeric variables there are dedicated statistical commands like:</p>
+<div id="numerical-continuous-variables" class="section level2">
+<h2><span class="header-section-number">2.1</span> Numerical (continuous) variables</h2>
+<p>For numerical variables there are dedicated statistical commands like:</p>
 <pre class="r"><code>summary(sw$birth_year)     </code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
 ##    8.00   35.00   52.00   87.57   72.00  896.00      44</code></pre>
@@ -2108,13 +2108,13 @@ glimpse(sw)</code></pre>
 {"columns":[{"label":["0%"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["25%"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["50%"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["75%"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["100%"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["iqr_mass"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["mad_mass"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"15","2":"55.6","3":"79","4":"84.5","5":"1358","6":"28.9","7":"16.3086"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<p>Turning numeric values into standard normal values can be done in a quite a simple way using the <code>Make.Z</code> command, or alternatively with <code>scale</code>. Both can be also applied on whole dataframes.</p>
+<p>Turning numerical values into standard normal values can be done in a quite a simple way using the <code>Make.Z</code> command, or alternatively with <code>scale</code>. Both can be also applied on whole dataframes.</p>
 <pre class="r"><code>sw$heightZ &lt;- Make.Z(sw$height)   # converting into z-scores (standard-normal) 
 sw$massZ &lt;- scale(sw$mass)  # same for mass, with scale()
 # as.data.frame(Make.Z(x))   # back converting into dataframe, when Make.Z is applied to a whole dataframe</code></pre>
 </div>
-<div id="categorial-factor-variables" class="section level2">
-<h2><span class="header-section-number">2.2</span> Categorial (factor) variables</h2>
+<div id="categorical-factor-variables" class="section level2">
+<h2><span class="header-section-number">2.2</span> Categorical (factor) variables</h2>
 <p>For factor variables there are several ways for inspecting them.</p>
 <pre class="r"><code>summary(sw$gender)  # levels with counts, with NA&#39;s</code></pre>
 <pre><code>##  feminine masculine      NA&#39;s 
@@ -2280,7 +2280,7 @@ sw$massZ &lt;- scale(sw$mass)  # same for mass, with scale()
 </div>
 <div id="grouped-variables-statistics" class="section level2">
 <h2><span class="header-section-number">2.3</span> Grouped variables statistics</h2>
-<p>The <code>{dplyr}</code> function <code>group_by</code> easily splits the dataframe into groups along certain variables (factors and numeric!) and works fine with the pipe.</p>
+<p>The <code>{dplyr}</code> function <code>group_by</code> easily splits the dataframe into groups along certain variables (factors and numerical!) and works fine with the pipe.</p>
 <pre class="r"><code>sw %&gt;% dplyr::group_by(gender) %&gt;%    # building groups by gender
     dplyr::select(c(2:4))   %&gt;%     # reducing the output by select only a few columns
          skim()     # skim overview according to the gender groups</code></pre>
@@ -2481,7 +2481,7 @@ sw$massZ &lt;- scale(sw$mass)  # same for mass, with scale()
 {"columns":[{"label":["gender"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["min"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Q1"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["median"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Q3"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["max"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["mean"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["sd"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["n"],"name":[9],"type":["int"],"align":["right"]},{"label":["missing"],"name":[10],"type":["int"],"align":["right"]}],"data":[{"1":"feminine","2":"96","3":"161.50","4":"165.5","5":"172","6":"213","7":"164.6875","8":"23.55057","9":"16","10":"1"},{"1":"masculine","2":"66","3":"171.25","4":"183.0","5":"193","6":"264","7":"176.5161","8":"37.64621","9":"62","10":"4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<p>And this works for grouping along continous variables, too – and of course with specifying the statistical values.</p>
+<p>And this works for grouping along continuous variables, too – and of course with specifying the statistical values.</p>
 <pre class="r"><code>df_stats(height ~ mass, data=sw, mean, range)   # mean and range of height by mass &quot;classes&quot; </code></pre>
 <pre><code>## Warning: Excluding 28 rows due to missing data [df_stats()].</code></pre>
 <div data-pagedtable="false">

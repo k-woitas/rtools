@@ -41,7 +41,7 @@ For plain R output there is a concise first viewing option of a dataframe with t
 glimpse(sw)
 ```
 
-There are `r ncol(sw)` variables, of which 3 are a list type. The other variables are numbers or characters, last ones partly better to be transformed into categorial (i.e. factor or dummy) variables.  
+There are `r ncol(sw)` variables, of which 3 are a list type. The other variables are numbers or characters, last ones partly better to be transformed into categorical (i.e. factor or dummy) variables.  
 Before we transform them, we might look at their unique values. Also "NA"s, R's term for non-existent values, are printed.
 ```{r}
 # show unique values for the specified variable, here columns 9, "gender" and 4, "hair_color" - which indeed is a tiny example of a for-loop
@@ -75,7 +75,7 @@ sw[3, -c(5:ncol(sw))]   # row 3 with columns 1 to 4 by sorting out columns 5 to 
 Let's now get a better insight into certain variables. For this we use the `skim` function from the package `{skimr}`. (Of course you can also "skim" the whole dataframe if you want to: It might deliver a large table, anyway.) `skim` gives us very useful basic statistics for the chosen variables according to their type, and even a mini histogram where appropriate.
 Therefore, `skim` is very useful at checking for missing values (and their share), whitespaces and unique values, and also a first glimpse of the single variate distributions.
 ```{r}
-# skimming a character, numeric, integer, factor variable
+# skimming a character, numerical, integer, factor variable
 skim(sw, sex, birth_year, height, hair_color)   # alternatively use column numbers like "skim(sw, c(8, 7, 2, 4))"
 ```
 
@@ -92,8 +92,8 @@ We might take a look at a specific subset of the whole dataset.
 
 With base R `sapply` there is a single command to apply the same function to several variables or the whole dataframe.
 ```{r}
-sapply(sw[,c(4:6,8:11)], nlevels)    # number of levels for the categorials (columns 4 to 6 and 8 to 11)
-sapply(sw[,2:3], median, na.rm=T)    # median score for the numerics (columns 2 and 3); "na.rm" for ignoring the NA's
+sapply(sw[,c(4:6,8:11)], nlevels)    # number of levels for the categoricals (columns 4 to 6 and 8 to 11)
+sapply(sw[,2:3], median, na.rm=T)    # median score for the numericals (columns 2 and 3); "na.rm" for ignoring the NA's
 ```
 
 
@@ -116,9 +116,9 @@ str(sw$birth_year)
 ```
 
 
-## Numeric (continous) variables
+## Numerical (continuous) variables
 
-For numeric variables there are dedicated statistical commands like:
+For numerical variables there are dedicated statistical commands like:
 ```{r}
 summary(sw$birth_year)     
 range(sw$birth_year, na.rm=T)  # note another option for dealing with NA's
@@ -135,7 +135,7 @@ df_stats(~ mass, data=sw, quantile, iqr, mad)   # adapted df_stats output
 ```
 
 
-Turning numeric values into standard normal values can be done in a quite a simple way using the `Make.Z` command, or alternatively with `scale`. Both can be also applied on whole dataframes.
+Turning numerical values into standard normal values can be done in a quite a simple way using the `Make.Z` command, or alternatively with `scale`. Both can be also applied on whole dataframes.
 ```{r}
 sw$heightZ <- Make.Z(sw$height)   # converting into z-scores (standard-normal) 
 sw$massZ <- scale(sw$mass)  # same for mass, with scale()
@@ -143,7 +143,7 @@ sw$massZ <- scale(sw$mass)  # same for mass, with scale()
 ```
 
 
-## Categorial (factor) variables
+## Categorical (factor) variables
 
 For factor variables there are several ways for inspecting them. 
 ```{r}
@@ -187,7 +187,7 @@ my_skim(na.omit(sw$mass))
 
 ## Grouped variables statistics
 
-The `{dplyr}` function `group_by` easily splits the dataframe into groups along certain variables (factors and numeric!) and works fine with the pipe.
+The `{dplyr}` function `group_by` easily splits the dataframe into groups along certain variables (factors and numerical!) and works fine with the pipe.
 ```{r}
 sw %>% dplyr::group_by(gender) %>%    # building groups by gender
     dplyr::select(c(2:4))   %>%     # reducing the output by select only a few columns
@@ -199,7 +199,7 @@ We've already heard about the `df_stats` for single variables. Bit it's also ver
 df_stats(height ~ gender, data=sw)   # standard view by df_stats
 ```
 
-And this works for grouping along continous variables, too  -- and of course with specifying the statistical values.
+And this works for grouping along continuous variables, too  -- and of course with specifying the statistical values.
 ```{r}
 df_stats(height ~ mass, data=sw, mean, range)   # mean and range of height by mass "classes" 
 ```
