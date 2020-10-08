@@ -15,7 +15,7 @@ output:
 
 
 
-*Exploratory Data Analysis with R*  
+**Exploratory Data Analysis with R**  
 
 With this RMarkdown document we will present some basic methods to overview given data.
 
@@ -228,7 +228,7 @@ glimpse(sw)
 ## $ starships  <list> [<"X-wing", "Imperial shuttle">, <>, <>, "TIE Advanced ...
 ```
 
-## Inspect a subset
+# Inspect a subset
 
 We might take a look at a specific subset of the whole dataset.
 

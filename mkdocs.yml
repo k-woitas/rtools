@@ -15,4 +15,4 @@ pages:
     - 'References': 'references.md'
     - 'Licence': 'license.md'
   - User manual:
-    - 'EDA (Exploratory Data Analysis)': 'eda.md'
+    - 'EDA': 'eda.md'

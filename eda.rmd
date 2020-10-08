@@ -17,7 +17,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message=TRUE)
 ```
 
-*Exploratory Data Analysis with R*  
+**Exploratory Data Analysis with R**  
 
 With this RMarkdown document we will present some basic methods to overview given data.
 
@@ -87,7 +87,7 @@ sw[,c(5:6,8:11)] <- lapply(sw[,c(5:6,8:11)], as.factor)   # turning columns 5, 6
 glimpse(sw)
 ```
 
-## Inspect a subset
+# Inspect a subset
 
 We might take a look at a specific subset of the whole dataset.
 
