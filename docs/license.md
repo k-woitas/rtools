@@ -1,0 +1,1 @@
+Some rights statement would be fine.

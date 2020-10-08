@@ -1,0 +1,18 @@
+site_name: R Tools Documentation
+repo_url: https://github.com/k-woitas/rtools/
+repo_name: GitHub
+theme: readthedocs
+site_description: Documentation for R Tools
+docs_dir: docs
+plugins:
+    - search
+theme:
+    name: readthedocs
+pages:
+  - Home: 'index.md'
+  - About:
+    - 'Introduction': 'introduction.md'
+    - 'References': 'references.md'
+    - 'Licence': 'license.md'
+  - User manual:
+    - 'EDA (Exploratory Data Analysis)': 'eda.md'
